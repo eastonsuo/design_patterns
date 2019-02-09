@@ -1,0 +1,52 @@
+# coding=utf-8
+import sys
+import math
+
+
+# 观察者模式 -- 为热水器设置监控，当热水器改变温度时，通知监控的对象
+# 监控1 用来监控当温度大于等于40度小于等于60度时提醒洗澡；
+# 监控2 用来监控当温度大于等于100度时提醒喝水；
+class WaterHeater():
+
+    def __init__(self):
+        self.__observer = []
+        self.__temperature = 0
+
+    def setTemperature(self, temperature):
+        self.__temperature = temperature
+        self.getTemperature()
+        for o in self.__observer:
+            o.update(self.__temperature)
+
+    def getTemperature(self):
+        print("current temperature is {}".format(self.__temperature))
+
+    def register(self, observer):
+        self.__observer.append(observer)
+
+
+class Observer():
+    def update(self, temperature):
+        pass
+
+
+class ShowerOberver(Observer):
+    def update(self, temperature):
+        if temperature >= 40 and temperature <= 60:
+            print("current temperature is {}, redeay to take a shower".format(temperature))
+
+
+class DrinkOberver(Observer):
+    def update(self, temperature):
+        if temperature >= 100:
+            print("current temperature is {}, redeay to drink".format(temperature))
+
+
+shower_observer = ShowerOberver()
+drink_observer = DrinkOberver()
+
+water_heater = WaterHeater()
+water_heater.register(shower_observer)
+water_heater.register(drink_observer)
+for temperature in range(10, 110, 10):
+    water_heater.setTemperature(temperature)
