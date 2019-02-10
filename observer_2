@@ -1,0 +1,68 @@
+# coding=utf-8
+# 基于框架的实现
+
+
+class Observer(object):
+    "观察者的基类"
+
+    def update(self, observable, obj):
+        pass
+
+
+class Observable(object):
+    "被观察者的基类"
+
+    def __init__(self):
+        self.__observers = []
+
+    def addObserver(self, observer):
+        self.__observers.append(observer)
+
+    def removeObserver(self, observer):
+        self.__observers.remove(observer)
+
+    def notifyObservers(self, obj):
+        for o in self.__observers:
+            o.update(self, obj)
+
+
+# --- 实现 --- #
+
+
+class WaterHeater(Observable):
+
+    def __init__(self):
+        super(WaterHeater, self).__init__()
+        self.__temperature = 0
+
+    def setTemperature(self, temperature):
+        self.__temperature = temperature
+        print("current temperature is {}".format(self.getTemperature()))
+        self.notifyObservers(self)
+
+    def getTemperature(self):
+        return self.__temperature
+
+
+class ShowerOberver(Observer):
+
+    def update(self, observable, obj):
+        if observable.getTemperature() >= 40 and observable.getTemperature() <= 60:
+            print("current temperature is {}, redeay to take a shower".format(observable.getTemperature()))
+
+
+class DrinkOberver(Observer):
+
+    def update(self, observable, obj):
+        if observable.getTemperature() >= 100:
+            print("current temperature is {}, redeay to drink".format(observable.getTemperature()))
+
+
+shower_observer = ShowerOberver()
+drink_observer = DrinkOberver()
+
+water_heater = WaterHeater()
+water_heater.addObserver(shower_observer)
+water_heater.addObserver(drink_observer)
+for temperature in range(10, 110, 10):
+    water_heater.setTemperature(temperature)
